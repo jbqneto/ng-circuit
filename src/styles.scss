@@ -1,10 +1,31 @@
+@import "primeicons/primeicons.css";
+
 html,
 body {
     padding: 0;
     margin: 0;
 }
 
-.app {
+.app,
+.app-content {
     width: 100%;
     height: 100vh;
+    display: flex;
+    flex-direction: column;
+
+    header {
+        flex-grow: 2;
+        background-color: #3c269d;
+    }
+
+    main {
+        flex-grow: 6;
+        background-color: #9b42c2;
+    }
+
+    footer {
+        flex-grow: 1;
+        border-top: 1px solid #c0a6e1;
+        background-color: #3c269d;
+    }
 }

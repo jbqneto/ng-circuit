@@ -58,6 +58,10 @@ export class Exercise {
         this.walking = CIRCUIT_LIST.find((circ) => circ.legend === walking);
     }
 
+    public getDuration() {
+        return this.duration;
+    }
+
     public static CL(duration: number): Exercise {
         return new Exercise(Legend.CL, duration);
     }

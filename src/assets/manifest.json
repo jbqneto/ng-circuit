@@ -1,0 +1,21 @@
+{
+    "name": "Meu App de Caminhada",
+    "short_name": "Caminhada",
+    "description": "Um app para acompanhar suas caminhadas",
+    "start_url": "/",
+    "display": "standalone",
+    "theme_color": "#3c269d",
+    "background_color": "#9b42c2",
+    "icons": [
+        {
+            "src": "assets/icons/project-32x32.png",
+            "sizes": "192x192",
+            "type": "image/png"
+        },
+        {
+            "src": "assets/icons/project-192x192.png",
+            "sizes": "192x192",
+            "type": "image/png"
+        }
+    ]
+}

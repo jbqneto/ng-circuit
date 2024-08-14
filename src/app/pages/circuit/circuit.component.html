@@ -1,7 +1,22 @@
-<div class="add-circuit">
-    <header></header>
-    <main></main>
+<div class="app-content circuit">
+    <header>
+        <p-dropdown [options]="circuits" [(ngModel)]="selectedCircuit" optionLabel="name"
+            placeholder="Selecione o circuito" />
+    </header>
+    <main>
+        <div class="chart">
+            <p-chart type="doughnut" [data]="data" [options]="options" />
+        </div>
+        <div class="text">
+            <div class="timing">
+                {{timing}}
+            </div>
+            <div class="title"></div>
+        </div>
+    </main>
     <footer>
-
+        <div (click)="togglePlay()" class="buttons">
+            <p-button [icon]="icon" [rounded]="true" />
+        </div>
     </footer>
 </div>

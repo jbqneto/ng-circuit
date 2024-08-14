@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { MenuItem } from 'primeng/api';
 import { SharedModule } from '../../shared/shared.module';
 @Component({
   selector: 'app-add-circuit',
@@ -8,5 +9,6 @@ import { SharedModule } from '../../shared/shared.module';
   styleUrl: './add-circuit.component.scss'
 })
 export class AddCircuitComponent {
+  items: MenuItem[] = [];
 
 }

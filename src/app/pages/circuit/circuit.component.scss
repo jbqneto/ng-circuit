@@ -1,0 +1,33 @@
+.circuit {
+
+    color: whitesmoke;
+
+    .footer {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        height: 100%;
+    }
+
+    .chart {
+        margin-top: 8px;
+    }
+
+    main {
+        .text {
+            margin-top: 4px;
+            text-align: center;
+            width: 100%;
+            font-weight: bold;
+        }
+    }
+
+    .buttons {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        height: 100%;
+
+    }
+}
