@@ -11,6 +11,15 @@
 
     .chart {
         margin-top: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        .chart-js {
+            width: 80%;
+            display: block;
+        }
+
     }
 
     main {
@@ -19,6 +28,14 @@
             text-align: center;
             width: 100%;
             font-weight: bold;
+            font-size: 24px;
+        }
+
+        .list {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 4px;
         }
     }
 

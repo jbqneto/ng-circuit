@@ -1,22 +1,32 @@
 <div class="app-content circuit">
     <header>
-        <p-dropdown [options]="circuits" [(ngModel)]="selectedCircuit" optionLabel="name"
-            placeholder="Selecione o circuito" />
+        <p-dropdown (onChange)="onCircuitSelected($event)" [options]="circuits" [(ngModel)]="selectedCircuit"
+            optionLabel="name" placeholder="Selecione o circuito" />
     </header>
     <main>
+        @if (currentRow) {
         <div class="chart">
-            <p-chart type="doughnut" [data]="data" [options]="options" />
+            <p-chart class="chart-js" #chart type="doughnut" [data]="data" [options]="options" />
         </div>
         <div class="text">
             <div class="timing">
                 {{timing}}
             </div>
-            <div class="title"></div>
+            <div class="title">
+                {{title}}
+            </div>
         </div>
+        <div class="list">
+            <p-listbox [options]="exercises" (onChange)="onRowSelect($event)" optionLabel="name"
+                [style]="{'width':'15rem'}" [listStyle]="{'max-height': '220px'}" />
+        </div>
+        }
     </main>
     <footer>
+        @if (currentExercise) {
         <div (click)="togglePlay()" class="buttons">
             <p-button [icon]="icon" [rounded]="true" />
         </div>
+        }
     </footer>
 </div>

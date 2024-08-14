@@ -1,14 +1,14 @@
 
 
 export enum Legend {
-    CL,
-    CM,
-    TR,
-    LE,
-    MO,
-    FO,
-    MF,
-    INT
+    CL = 'CL',
+    CM = 'CM',
+    TR = 'TR',
+    LE = 'LE',
+    MO = 'MO',
+    FO = 'FO',
+    MF = 'MF',
+    INT = 'INT'
 }
 
 export type CircuitList = {
@@ -59,7 +59,7 @@ export class Exercise {
     }
 
     public getDuration() {
-        return this.duration;
+        return this.duration * 60;
     }
 
     public static CL(duration: number): Exercise {
@@ -92,17 +92,11 @@ export class Exercise {
 
 export interface ExerciseRow {
     repetitions: number;
+    title: string;
     exercises: Exercise[];
 }
 
-export class WalkingRow implements ExerciseRow {
-    repetitions: number = 1;
-    exercises: Exercise[] = [
-        new Exercise(Legend.CL, 10)
-    ];
-}
-
-export class DynamicRow implements ExerciseRow {
+export abstract class BasicRow implements ExerciseRow {
     repetitions: number;
     exercises: Exercise[];
 
@@ -111,20 +105,46 @@ export class DynamicRow implements ExerciseRow {
             this.exercises = exercises;
     }
 
+    public get title(): string {
+        let text = this.repetitions + 'X';
+
+        text += this.exercises.reduce((txt, ex) => {
+            return txt + ' / ' + ex.walking?.legend;
+        }, '');
+
+        return text;
+    }
+
+    public getTotalTiming() {
+        return this.exercises.reduce((sum, ex) => {
+            return sum + (this.repetitions * ex.getDuration());
+        }, 0)
+    }
+
+}
+
+export class WalkingRow extends BasicRow {
+    constructor(timing = 10) {
+        super(1, Exercise.CL(timing))
+    }
+}
+
+export class DynamicRow extends BasicRow {
+
 }
 
 export interface Circuit {
     name: string;
-    rows: ExerciseRow[];
+    rows: BasicRow[];
 }
 
 export const DAYS_CIRCUITS: Circuit[] = [
     {
         name: '2 Semana Terça',
         rows: [
-            new WalkingRow(),
+            new WalkingRow(1),
             new DynamicRow(4, Exercise.TR(2), Exercise.CL(3)),
-            new WalkingRow(),
+            new WalkingRow(2),
         ]
     },
     {

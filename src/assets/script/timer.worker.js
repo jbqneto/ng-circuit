@@ -1,14 +1,23 @@
+let timeLeft;
+let paused = false;
+let interval;
+
 self.addEventListener('message', (event) => {
     const { duration } = event.data;
-    let timeLeft = duration;
 
-    const interval = setInterval(() => {
-        timeLeft--;
+    paused = event.data.pause ?? false;
+
+    if (duration) {
+        timeLeft = duration;
+    }
+
+    interval = setInterval(() => {
         if (timeLeft === 0) {
             clearInterval(interval);
-            postMessage({ message: 'timeUp' });
-        } else {
-            postMessage({ timeLeft });
+        } else if (!paused) {
+            timeLeft--;
         }
+
+        postMessage({ timeLeft });
     }, 1000);
 });

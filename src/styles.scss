@@ -16,6 +16,9 @@ body {
     header {
         flex-grow: 2;
         background-color: #3c269d;
+        align-items: center;
+        justify-content: center;
+        display: flex;
     }
 
     main {

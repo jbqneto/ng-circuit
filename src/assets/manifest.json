@@ -8,12 +8,12 @@
     "background_color": "#9b42c2",
     "icons": [
         {
-            "src": "assets/icons/project-32x32.png",
-            "sizes": "192x192",
+            "src": "icons/project-32x32.png",
+            "sizes": "32x32",
             "type": "image/png"
         },
         {
-            "src": "assets/icons/project-192x192.png",
+            "src": "icons/project-192x192.png",
             "sizes": "192x192",
             "type": "image/png"
         }
