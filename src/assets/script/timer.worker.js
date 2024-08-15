@@ -27,6 +27,8 @@ self.addEventListener('message', (event) => {
         interval = setInterval(() => {
             if (!paused && timeLeft > 0) {
                 timeLeft--;
+            } else if (!paused && 'vibrate' in navigator) {
+                navigator.vibrate([100, 200, 300, 400]);
             } else {
                 return;
             }
