@@ -19,7 +19,7 @@
         <div class="list">
             <ul>
                 @for (item of exercises; track item.code) {
-                <li [ngClass]="{selected: selectedExcercise?.code === item.code}">{{item.name}}</li>
+                <li [ngClass]="{selected: posRow === item.code}">{{item.name}}</li>
                 }
             </ul>
         </div>

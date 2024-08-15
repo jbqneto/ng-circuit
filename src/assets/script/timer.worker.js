@@ -31,8 +31,6 @@ self.addEventListener('message', (event) => {
                 return;
             }
 
-            console.log("Interval running: " + timeLeft);
-
             if (!paused) {
                 postMessage({ timeLeft });
             }

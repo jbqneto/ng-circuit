@@ -322,6 +322,19 @@ export class CircuitComponent extends BaseComponent implements OnInit {
     }
   }
 
+  public get posRow(): number {
+    return this.currentPosition?.row ?? 0;
+  }
+
+  public get posExcercise(): number {
+    return this.currentPosition?.exercise ?? 0;
+  }
+
+  public get posRepetition(): number {
+    return this.currentPosition?.repetition ?? 0;
+  }
+
+
   public get title(): string {
     if (!this.exercise) return '';
 
