@@ -214,13 +214,14 @@ export class CircuitComponent extends BaseComponent implements OnInit {
 
     this.playEffect('alarm');
 
-    if (prevExcercise) {
-      this.playTextVoice(body);
-    }
-
     if (!nextExcercise) {
       body = 'Fim do circuito';
-      this.playTextVoice(body);
+    }
+
+    if (prevExcercise || !nextExcercise) {
+      setTimeout(() => {
+        this.playTextVoice(body);
+      }, 500);
     }
 
     if ('Notification' in window) {

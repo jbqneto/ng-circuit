@@ -151,7 +151,7 @@ export const DAYS_CIRCUITS: Circuit[] = [
         name: '2 Semana Quinta',
         rows: [
             new WalkingRow(),
-            new DynamicRow(4, Exercise.TR(2), Exercise.CL(3)),
+            new DynamicRow(4, Exercise.FO(1), Exercise.CM(4)),
             new WalkingRow(),
         ]
     },
@@ -159,7 +159,7 @@ export const DAYS_CIRCUITS: Circuit[] = [
         name: '2 Semana Sábado',
         rows: [
             new WalkingRow(),
-            new DynamicRow(4, Exercise.TR(2), Exercise.CL(3)),
+            new DynamicRow(6, Exercise.MO(1), Exercise.CL(4)),
             new WalkingRow(),
         ]
     },
@@ -167,7 +167,7 @@ export const DAYS_CIRCUITS: Circuit[] = [
         name: '3 Semana Terça',
         rows: [
             new WalkingRow(),
-            new DynamicRow(4, Exercise.TR(2), Exercise.CL(3)),
+            new DynamicRow(6, Exercise.MO(2), Exercise.CL(3)),
             new WalkingRow(),
         ]
     },
@@ -175,7 +175,7 @@ export const DAYS_CIRCUITS: Circuit[] = [
         name: '3 Semana Quinta',
         rows: [
             new WalkingRow(),
-            new DynamicRow(4, Exercise.TR(2), Exercise.CL(3)),
+            new DynamicRow(4, Exercise.MO(3), Exercise.CL(2)),
             new WalkingRow(),
         ]
     },
@@ -183,12 +183,12 @@ export const DAYS_CIRCUITS: Circuit[] = [
         name: '3 Semana Sábado',
         rows: [
             new WalkingRow(),
-            new DynamicRow(4, Exercise.TR(2), Exercise.CL(3)),
+            new DynamicRow(7, Exercise.MO(2), Exercise.CL(3)),
             new WalkingRow(),
         ]
     },
     {
-        name: '4 Semana Terça',
+        name: '4 Semana Terça', //TODO: Alterar daqui p baixo
         rows: [
             new WalkingRow(),
             new DynamicRow(4, Exercise.TR(2), Exercise.CL(3)),
