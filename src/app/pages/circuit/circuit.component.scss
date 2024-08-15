@@ -37,6 +37,23 @@
             align-items: center;
             margin-top: 4px;
         }
+
+        ul {
+            list-style: none;
+            padding: 16px;
+            width: 80%;
+
+            li {
+                background-color: aliceblue;
+                color: #9b42c2;
+                padding: 8px;
+            }
+
+            li.selected {
+                color: black;
+                font-weight: bold;
+            }
+        }
     }
 
     .buttons {

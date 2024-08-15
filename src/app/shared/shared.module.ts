@@ -5,6 +5,7 @@ import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
 import { ChartModule } from 'primeng/chart';
 import { MenubarModule } from 'primeng/menubar';
+import { OrderListModule } from 'primeng/orderlist';
 
 const sharedModules = [
   CommonModule,
@@ -12,7 +13,8 @@ const sharedModules = [
   CardModule,
   MenubarModule,
   ButtonModule,
-  ChartModule
+  ChartModule,
+  OrderListModule
 ];
 
 @NgModule({

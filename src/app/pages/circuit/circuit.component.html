@@ -17,13 +17,16 @@
             </div>
         </div>
         <div class="list">
-            <p-listbox [options]="exercises" (onChange)="onRowSelect($event)" optionLabel="name"
-                [style]="{'width':'15rem'}" [listStyle]="{'max-height': '220px'}" />
+            <ul>
+                @for (item of exercises; track item.code) {
+                <li [ngClass]="{selected: selectedExcercise?.code === item.code}">{{item.name}}</li>
+                }
+            </ul>
         </div>
         }
     </main>
     <footer>
-        @if (currentExercise) {
+        @if (selectedExcercise) {
         <div (click)="togglePlay()" class="buttons">
             <p-button [icon]="icon" [rounded]="true" />
         </div>

@@ -1,4 +1,5 @@
 import { Component, DestroyRef, inject, OnInit, ViewChild } from '@angular/core';
+import { inject as analytics } from '@vercel/analytics';
 import { UIChart } from 'primeng/chart';
 import { DropdownChangeEvent, DropdownModule } from 'primeng/dropdown';
 import { ListboxModule } from 'primeng/listbox';
@@ -46,7 +47,7 @@ export class CircuitComponent extends BaseComponent implements OnInit {
   public selectedCircuit: SelectItem | null = null;
   public currentRow: ExerciseRow | null = null;
   public exercise: Exercise | null = null;
-  public currentExercise: SelectItem | null = null;
+  public selectedExcercise: SelectItem | null = null;
 
   private notificationPermission: NotificationPermission | null = null;
   private currentPosition: Positions | null = null;
@@ -88,7 +89,9 @@ export class CircuitComponent extends BaseComponent implements OnInit {
           this.updateChart();
         }
 
-      })
+      });
+
+    analytics();
 
   }
   nextExcercise(positions: Positions) {
@@ -169,9 +172,9 @@ export class CircuitComponent extends BaseComponent implements OnInit {
 
     this.currentRow = row;
 
-    this.currentExercise = {
-      code: 0,
-      name: exercise.walking?.title ?? ''
+    this.selectedExcercise = {
+      code: positions.exercise,
+      name: exercise.walking?.title ?? '' + ' (' + positions.repetition + ')'
     };
 
     this.circuitTime = circuit.rows.reduce((sum, row) => {
@@ -187,14 +190,20 @@ export class CircuitComponent extends BaseComponent implements OnInit {
     }
   }
 
-  public requestNotificationPermission() {
-    Notification.requestPermission().then(permission => {
-      this.notificationPermission = permission;
+  public requestNotificationPermission(): Promise<boolean> {
 
-      if (permission === 'granted') {
-        new Notification('Notificações habilitadas!');
-      }
+    return new Promise((resolve, reject) => {
+      Notification.requestPermission().then(permission => {
+        this.notificationPermission = permission;
+
+        if (permission === 'granted') {
+          resolve(true);
+        } else {
+          resolve(false);
+        }
+      });
     });
+
   }
 
   private notify(nextExcercise: Exercise | null, prevExcercise: Exercise | null): void {
@@ -299,8 +308,6 @@ export class CircuitComponent extends BaseComponent implements OnInit {
   public get exercises(): SelectItem[] {
     if (!this.currentCircuit) return [];
 
-    const exercise = this.currentExercise
-
     return this.currentCircuit.rows.map((row, index) => ({
       code: index,
       name: row.title
@@ -322,16 +329,26 @@ export class CircuitComponent extends BaseComponent implements OnInit {
   }
 
   public togglePlay() {
-    if (!this.notificationPermission || this.notificationPermission !== 'granted') {
-      this.requestNotificationPermission();
-    }
-
     this.playEffect('click');
 
-    if (this.isPlaying) {
-      this.pauseTimer();
+    const actToggle = () => {
+      if (this.isPlaying) {
+        this.pauseTimer();
+      } else {
+        this.playTimer();
+      }
+    };
+
+    if (!this.notificationPermission || this.notificationPermission !== 'granted') {
+      this.requestNotificationPermission()
+        .then((res) => {
+          if (res) {
+            new Notification('Notificações habilitadas!', { silent: false });
+          }
+          actToggle();
+        })
     } else {
-      this.playTimer();
+      actToggle();
     }
   }
 

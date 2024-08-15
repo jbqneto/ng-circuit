@@ -15,24 +15,20 @@ self.addEventListener('message', (event) => {
 
     paused = event.data.pause ?? false;
 
-    if (paused && interval) {
-        return clearLocalInterval();
-    }
-
     if (duration) {
         timeLeft = duration;
     }
 
     if (timeLeft === 0) {
-        return clearLocalInterval();
+        return;
     }
 
     if (interval === null) {
         interval = setInterval(() => {
-            if (timeLeft === 0) {
-                clearLocalInterval();
-            } else if (!paused) {
+            if (!paused && timeLeft > 0) {
                 timeLeft--;
+            } else {
+                return;
             }
 
             console.log("Interval running: " + timeLeft);
