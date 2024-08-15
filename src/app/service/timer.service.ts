@@ -14,7 +14,6 @@ export class TimerService {
     public constructor() {
         this.worker = new Worker('assets/script/timer.worker.js');
         this.worker.onmessage = (event) => {
-            console.log(`(${this.paused}) worker time: ` + event.data.timeLeft);
             if (event.data.timeLeft !== undefined && !this.paused) {
                 this.timeLeft = event.data.timeLeft;
                 this.timer$.next(event.data.timeLeft);
@@ -25,6 +24,10 @@ export class TimerService {
     public startNewTimer(timeInSecs: number) {
         this.timeLeft = timeInSecs;
         this.worker.postMessage({ duration: timeInSecs });
+    }
+
+    public isStarted() {
+        return this.timeLeft > 0;
     }
 
     pauseTimer() {

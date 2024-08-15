@@ -17,6 +17,7 @@ type Positions = {
   circuit: number;
   row: number;
   exercise: number
+  repetition: number;
 }
 
 type EffectTitle = 'click' | 'alarm';
@@ -47,6 +48,7 @@ export class CircuitComponent extends BaseComponent implements OnInit {
   public exercise: Exercise | null = null;
   public currentExercise: SelectItem | null = null;
 
+  private notificationPermission: NotificationPermission | null = null;
   private currentPosition: Positions | null = null;
   private player: HTMLAudioElement;
   private _circuits = DAYS_CIRCUITS;
@@ -62,7 +64,7 @@ export class CircuitComponent extends BaseComponent implements OnInit {
   }
 
   public ngOnInit(): void {
-
+    this.notificationPermission = Notification.permission;
     this.options = {
       cutout: '60%',
       plugins: {
@@ -72,10 +74,6 @@ export class CircuitComponent extends BaseComponent implements OnInit {
       }
     };
 
-    if (this.chart) {
-      console.log(this.chart.data);
-    }
-
     this.timerService.onTimeChange()
       .pipe(
         takeUntil(this.destroyed)
@@ -84,7 +82,7 @@ export class CircuitComponent extends BaseComponent implements OnInit {
         this.elapsedTime = this.elapsedTime + 1;
 
         if (this.timeLeft === 0 && this.currentPosition) {
-          this.notify();
+          this.isPlaying = false;
           this.nextExcercise(this.currentPosition);
         } else {
           this.updateChart();
@@ -98,76 +96,138 @@ export class CircuitComponent extends BaseComponent implements OnInit {
     const currentRow = positions.row;
     const excercisePos = positions.exercise;
 
+    let nextExcercise;
+    let nextRow;
+
     if (!this.currentCircuit) return;
 
     const row = this.currentCircuit.rows.at(currentRow);
 
     if (!row) return;
 
-    if (currentRow < row.exercises.length - 1) {
+    let repetition = positions.repetition;
 
+    const isLastRow = rowPos === this.currentCircuit.rows.length - 1;
+    const isLastExercise = excercisePos === row.exercises.length - 1;
+    const isLastRound = repetition === row.repetitions;
+
+    //FIM
+    if (isLastRound && isLastExercise && isLastRow) {
+      return this.endCircuit();
     }
 
-    if (this.currentCircuit.rows.length - 1 < rowPos) {
-      this.currentPosition = {
-        circuit: positions.circuit,
-        exercise: positions.exercise,
-        row: positions.row + 1
-      }
+    if (!isLastExercise) {
+      nextRow = rowPos;
+      nextExcercise = excercisePos + 1;
+    } else if (isLastExercise && repetition < row.repetitions) {
+      repetition += 1;
+      nextExcercise = 0;
+      nextRow = rowPos;
+    } else if (isLastExercise && repetition === row.repetitions) {
+      nextRow = rowPos + 1;
+      nextExcercise = 0;
+      repetition = 1;
     }
 
-    this.updateCurrentCircuit(positions);
+    this.updateCurrentCircuit({
+      circuit: positions.circuit,
+      exercise: nextExcercise ?? excercisePos,
+      row: nextRow ?? rowPos,
+      repetition,
+    });
 
   }
+
+  private endCircuit() {
+
+  }
+
   private updateCurrentCircuit(positions: Positions) {
     const circuit = this._circuits.at(positions.circuit);
 
+    console.log("updating positions: ", positions);
+
     if (!circuit) return;
 
-    this.currentPosition = positions;
+    const row = circuit.rows.at(positions.row);
 
+    if (!row) return;
+
+    const exercise = row.exercises.at(positions.exercise);
+
+    if (!exercise) return;
+
+    const autoPlay = this.exercise !== null;
+
+    if (this.exercise) {
+      this.notify(exercise, this.exercise);
+    }
+
+    this.currentPosition = positions;
     this.currentCircuit = circuit;
+    this.exercise = exercise;
+
+    this.currentRow = row;
+
+    this.currentExercise = {
+      code: 0,
+      name: exercise.walking?.title ?? ''
+    };
+
     this.circuitTime = circuit.rows.reduce((sum, row) => {
       return sum + row.getTotalTiming();
     }, 0);
 
-    this.currentRow = circuit.rows[0] ?? null;
-
-    if (!this.currentRow) return;
-
-    this.exercise = this.currentRow.exercises.at(0) ?? null;
-
-    if (!this.exercise) return;
-
-    this.currentExercise = {
-      code: 0,
-      name: this.exercise?.walking?.title ?? ''
-    };
-
     this.timeLeft = this.exercise?.getDuration() ?? 0;
 
-    this.timeTotal = circuit.rows.reduce((sum, current) => {
-      return sum + current.getTotalTiming();
-    }, 0);
+    if (autoPlay) {
+      setTimeout(() => {
+        this.playTimer();
+      }, 100);
+    }
   }
 
-  private notify(): void {
-    const circuit = this.currentCircuit;
+  public requestNotificationPermission() {
+    Notification.requestPermission().then(permission => {
+      this.notificationPermission = permission;
+
+      if (permission === 'granted') {
+        new Notification('Notificações habilitadas!');
+      }
+    });
+  }
+
+  private notify(nextExcercise: Exercise | null, prevExcercise: Exercise | null): void {
+    const next = nextExcercise?.walking?.title ?? 'exercício';
+    const prev = prevExcercise?.walking?.title ?? '';
+    const title = prev === '' ? 'Iniciando os exercícios' : `Fim de ${prev}`;
+    let body = 'Começando ' + next;
 
     this.playEffect('alarm');
+
+    if (prevExcercise) {
+      this.playTextVoice(body);
+    }
+
+    if (!nextExcercise) {
+      body = 'Fim do circuito';
+      this.playTextVoice(body);
+    }
 
     if ('Notification' in window) {
       Notification.requestPermission().then(permission => {
         if (permission === "granted") {
-          new Notification('Tempo Acabou!', {
-            body: 'Começando o próximo: '
+          new Notification(title, {
+            body
           });
         }
       });
     }
 
     if ('vibrate' in navigator) {
-      navigator.vibrate(200); // Vibra por 200ms
+      navigator.vibrate(500);
+      navigator.vibrate(300);
+      navigator.vibrate(100);
     }
   }
 
@@ -190,6 +250,9 @@ export class CircuitComponent extends BaseComponent implements OnInit {
   updateChart(): any {
     if (!this.chart) return;
 
+    const currentData = this.chart.data.datasets[0].data[1];
+
+    this.chart.data.datasets[0].data[1] = currentData - this.elapsedTime;
     this.chart.data.datasets[0].data[1] = this.elapsedTime;
 
     this.chart.refresh();
@@ -200,19 +263,22 @@ export class CircuitComponent extends BaseComponent implements OnInit {
 
   public onCircuitSelected(evt: DropdownChangeEvent) {
     const index = evt.value;
+    this.isPlaying = false;
 
     this.updateCurrentCircuit({
       circuit: index,
       exercise: 0,
-      row: 0
+      row: 0,
+      repetition: 1
     });
 
+    if (!this.currentCircuit) return;
+
+    this.timeTotal = this.currentCircuit.rows.reduce((sum, current) => {
+      return sum + current.getTotalTiming();
+    }, 0);
 
     this.data = this.createChart(this.timeTotal);
-  }
-
-  private startExercise(exercise: Exercise) {
-    this.timerService.startNewTimer(exercise.getDuration());
   }
 
   public get icon(): string {
@@ -256,21 +322,34 @@ export class CircuitComponent extends BaseComponent implements OnInit {
   }
 
   public togglePlay() {
-    this.isPlaying = !this.isPlaying;
+    if (!this.notificationPermission || this.notificationPermission !== 'granted') {
+      this.requestNotificationPermission();
+    }
 
     this.playEffect('click');
 
-    if (!this.isPlaying) {
+    if (this.isPlaying) {
       this.pauseTimer();
     } else {
       this.playTimer();
     }
   }
 
+  private playTextVoice(text: string) {
+    const message = new SpeechSynthesisUtterance();
+
+    // set the text to be spoken
+    message.text = text;
+
+    // create an instance of the speech synthesis object
+    const speechSynthesis = window.speechSynthesis;
+
+    // start speaking
+    speechSynthesis.speak(message);
+  }
+
   private playEffect(effect: EffectTitle) {
     const audio = effectMap.get(effect);
-
-    console.log("audio: ", audio);
 
     if (audio) {
       this.player.src = audio;
@@ -288,7 +367,9 @@ export class CircuitComponent extends BaseComponent implements OnInit {
   playTimer() {
     if (!this.exercise) return;
 
-    if (this.timeLeft === this.exercise.getDuration()) {
+    this.isPlaying = true;
+
+    if (!this.timerService.isStarted()) {
       this.timerService.startNewTimer(this.exercise.getDuration());
     } else {
       this.timerService.continueTimer();
@@ -296,6 +377,7 @@ export class CircuitComponent extends BaseComponent implements OnInit {
   }
 
   pauseTimer() {
+    this.isPlaying = false;
     this.timerService.pauseTimer();
   }
 
