@@ -142,9 +142,9 @@ export const DAYS_CIRCUITS: Circuit[] = [
     {
         name: '2 Semana Terça',
         rows: [
-            new WalkingRow(1),
+            new WalkingRow(),
             new DynamicRow(4, Exercise.TR(2), Exercise.CL(3)),
-            new WalkingRow(2),
+            new WalkingRow(),
         ]
     },
     {

@@ -80,12 +80,12 @@ export class CircuitComponent extends BaseComponent implements OnInit {
         takeUntil(this.destroyed)
       ).subscribe((time) => {
         this.timeLeft = time;
-        this.elapsedTime = this.elapsedTime + 1;
 
         if (this.timeLeft === 0 && this.currentPosition) {
           this.isPlaying = false;
           this.nextExcercise(this.currentPosition);
         } else {
+          this.elapsedTime = this.elapsedTime + 1;
           this.updateChart();
         }
 
@@ -338,7 +338,7 @@ export class CircuitComponent extends BaseComponent implements OnInit {
   public get title(): string {
     if (!this.exercise) return '';
 
-    return `${this.exercise.walking?.title}`
+    return `${this.exercise.walking?.title} (${this.posRepetition})`
   }
 
   public togglePlay() {
