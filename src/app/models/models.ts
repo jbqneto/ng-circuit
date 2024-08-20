@@ -58,8 +58,12 @@ export class Exercise {
         this.walking = CIRCUIT_LIST.find((circ) => circ.legend === walking);
     }
 
-    public getDuration() {
+    public get durationInSecs() {
         return this.duration * 60;
+    }
+
+    public getDuration() {
+        return this.duration;
     }
 
     public static CL(duration: number): Exercise {
@@ -109,7 +113,7 @@ export abstract class BasicRow implements ExerciseRow {
         let text = this.repetitions + 'X';
 
         text += this.exercises.reduce((txt, ex) => {
-            return txt + ' / ' + ex.walking?.legend;
+            return txt + ' / ' + ex.walking?.legend + ' ' + ex.getDuration() + "''";
         }, '');
 
         return text;
@@ -117,7 +121,7 @@ export abstract class BasicRow implements ExerciseRow {
 
     public getTotalTiming() {
         return this.exercises.reduce((sum, ex) => {
-            return sum + (this.repetitions * ex.getDuration());
+            return sum + (this.repetitions * ex.durationInSecs);
         }, 0)
     }
 

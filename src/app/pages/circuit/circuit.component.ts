@@ -152,6 +152,8 @@ export class CircuitComponent extends BaseComponent implements OnInit {
 
     if (!circuit) return;
 
+    console.log("selected circuit", circuit);
+
     const row = circuit.rows.at(positions.row);
 
     if (!row) return;
@@ -160,17 +162,18 @@ export class CircuitComponent extends BaseComponent implements OnInit {
 
     if (!exercise) return;
 
-    const autoPlay = this.exercise !== null;
+    const autoPlay = this.isPlaying && this.exercise !== null;
 
-    if (this.exercise) {
+    if (autoPlay) {
       this.notify(exercise, this.exercise);
     }
 
     this.currentPosition = positions;
     this.currentCircuit = circuit;
     this.exercise = exercise;
-
     this.currentRow = row;
+
+    console.log(this.currentCircuit)
 
     this.selectedExcercise = {
       code: positions.exercise,
@@ -181,7 +184,7 @@ export class CircuitComponent extends BaseComponent implements OnInit {
       return sum + row.getTotalTiming();
     }, 0);
 
-    this.timeLeft = this.exercise?.getDuration() ?? 0;
+    this.timeLeft = this.exercise?.durationInSecs ?? 0;
 
     if (autoPlay) {
       setTimeout(() => {
@@ -276,7 +279,7 @@ export class CircuitComponent extends BaseComponent implements OnInit {
     this.isPlaying = false;
 
     this.updateCurrentCircuit({
-      circuit: index,
+      circuit: index.code,
       exercise: 0,
       row: 0,
       repetition: 1
@@ -401,7 +404,7 @@ export class CircuitComponent extends BaseComponent implements OnInit {
     this.isPlaying = true;
 
     if (!this.timerService.isStarted()) {
-      this.timerService.startNewTimer(this.exercise.getDuration());
+      this.timerService.startNewTimer(this.exercise.durationInSecs);
     } else {
       this.timerService.continueTimer();
     }
